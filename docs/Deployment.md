@@ -188,6 +188,38 @@ CapRover keeps previous images. In the dashboard:
 - **CPU/Memory**: Dashboard → Apps → cronicle → Monitoring
 - **Health**: Automatic health checks via Docker HEALTHCHECK
 
+### CapRover Troubleshooting
+
+#### Permission Denied Errors
+
+If you see errors like:
+```
+Error: EACCES: permission denied, open 'logs/Cronicle.log'
+Error: EACCES: permission denied, mkdir 'data/_temp'
+```
+
+**This has been fixed!** Ensure you're using the latest version of the Cronicle code. The `docker-entrypoint.sh` script now automatically fixes permissions.
+
+If the issue persists:
+
+1. **Verify persistent directories are configured** in CapRover dashboard:
+   - `/opt/cronicle/data`
+   - `/opt/cronicle/logs`
+   - `/opt/cronicle/queue`
+   - `/opt/cronicle/plugins`
+
+2. **Redeploy** to apply the fix:
+   ```bash
+   caprover deploy
+   ```
+
+3. **Check logs** to verify it's working:
+   ```bash
+   caprover logs -a cronicle
+   ```
+
+You should see "Ensuring directory permissions..." in the logs at startup.
+
 ---
 
 ## Production Configuration
