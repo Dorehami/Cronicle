@@ -32,6 +32,18 @@ if [ ! -d "data" ] || [ -z "$(ls -A data 2>/dev/null)" ]; then
     node bin/storage-cli.js setup || {
         echo "Storage initialization failed, but continuing..."
     }
+    
+    echo "Storage initialized successfully"
+fi
+
+# For single-server deployments, ensure we're set as master
+# CapRover assigns dynamic hostnames, so we need to handle this
+if [ -z "$CRONICLE_master_hostname" ]; then
+    # Get the hostname (CapRover uses container hostname)
+    HOSTNAME=$(hostname)
+    echo "Detected hostname: $HOSTNAME"
+    export CRONICLE_master_hostname="$HOSTNAME"
+    echo "Set master hostname to: $CRONICLE_master_hostname"
 fi
 
 # Handle different startup modes
