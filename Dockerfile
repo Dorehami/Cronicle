@@ -36,15 +36,11 @@ RUN apk add --no-cache \
 # Set working directory
 WORKDIR /opt/cronicle
 
-# Copy from builder (node user already exists in base image as UID 1000)
-COPY --from=builder --chown=node:node /opt/cronicle /opt/cronicle
+# Copy from builder
+COPY --from=builder /opt/cronicle /opt/cronicle
 
-# Create necessary directories and set permissions
-RUN mkdir -p data logs queue conf plugins && \
-    chown -R node:node data logs queue conf plugins
-
-# Switch to non-root user
-USER node
+# Create necessary directories
+RUN mkdir -p data logs queue conf plugins
 
 # Expose HTTP port
 EXPOSE 3012

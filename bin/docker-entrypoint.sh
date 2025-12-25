@@ -9,12 +9,8 @@ echo "Starting Cronicle..."
 # Change to app directory
 cd /opt/cronicle
 
-# Ensure directories exist and have correct permissions
-# This is critical for CapRover and other platforms that mount persistent storage
-# Mounted volumes may not preserve ownership from Dockerfile
-echo "Ensuring directory permissions..."
+# Ensure directories exist for persistent storage
 mkdir -p data logs queue conf plugins
-chmod -R u+w data logs queue conf plugins 2>/dev/null || true
 
 # Check if this is first run (no config file)
 if [ ! -f "conf/config.json" ]; then
