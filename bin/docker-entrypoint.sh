@@ -12,6 +12,26 @@ cd /opt/cronicle
 # Ensure directories exist for persistent storage
 mkdir -p data logs queue conf plugins
 
+# For single-server deployments, use a fixed hostname
+# CapRover assigns dynamic container hostnames that change on restart
+# This causes cluster mismatch issues, so we use a static hostname
+# CRITICAL: Set this BEFORE storage initialization so setup.json uses it
+if [ -z "$HOSTNAME" ]; then
+    export HOSTNAME="cronicle-master"
+    echo "Set HOSTNAME to: $HOSTNAME"
+fi
+
+if [ -z "$CRONICLE_hostname" ]; then
+    export CRONICLE_hostname="cronicle-master"
+    echo "Set CRONICLE_hostname to: $CRONICLE_hostname"
+fi
+
+# Set this server as the master for single-server mode
+if [ -z "$CRONICLE_master_hostname" ]; then
+    export CRONICLE_master_hostname="cronicle-master"
+    echo "Set master hostname to: $CRONICLE_master_hostname"
+fi
+
 # Check if this is first run (no config file)
 if [ ! -f "conf/config.json" ]; then
     echo "First run detected - initializing configuration..."
@@ -27,27 +47,19 @@ fi
 if [ ! -d "data" ] || [ -z "$(ls -A data 2>/dev/null)" ]; then
     echo "Initializing storage..."
     
+    # Copy setup.json to conf directory so storage-cli can find it
+    if [ -f "sample_conf/setup.json" ] && [ ! -f "conf/setup.json" ]; then
+        cp sample_conf/setup.json conf/setup.json
+    fi
+    
     # Run setup to initialize storage
     # This creates the initial admin user and sets up the database
+    # The HOSTNAME env var set above will be used to replace _HOSTNAME_ placeholders
     node bin/storage-cli.js setup || {
         echo "Storage initialization failed, but continuing..."
     }
     
-    echo "Storage initialized successfully"
-fi
-
-# For single-server deployments, use a fixed hostname
-# CapRover assigns dynamic container hostnames that change on restart
-# This causes cluster mismatch issues, so we use a static hostname
-if [ -z "$CRONICLE_hostname" ]; then
-    export CRONICLE_hostname="cronicle-master"
-    echo "Set fixed hostname to: $CRONICLE_hostname"
-fi
-
-# Set this server as the master for single-server mode
-if [ -z "$CRONICLE_master_hostname" ]; then
-    export CRONICLE_master_hostname="cronicle-master"
-    echo "Set master hostname to: $CRONICLE_master_hostname"
+    echo "Storage initialized successfully with hostname: $HOSTNAME"
 fi
 
 # Handle different startup modes
