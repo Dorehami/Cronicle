@@ -198,27 +198,29 @@ Error: EACCES: permission denied, open 'logs/Cronicle.log'
 Error: EACCES: permission denied, mkdir 'data/_temp'
 ```
 
-**This has been fixed!** Ensure you're using the latest version of the Cronicle code. The `docker-entrypoint.sh` script now automatically fixes permissions.
+**This has been fixed!** The Docker container now runs as root for compatibility with CapRover's persistent directory mounting system. Container isolation provides adequate security in this context.
 
-If the issue persists:
+**If you're using an older version:**
 
-1. **Verify persistent directories are configured** in CapRover dashboard:
-   - `/opt/cronicle/data`
-   - `/opt/cronicle/logs`
-   - `/opt/cronicle/queue`
-   - `/opt/cronicle/plugins`
+1. **Pull the latest code**:
+   ```bash
+   git pull origin master
+   ```
 
-2. **Redeploy** to apply the fix:
+2. **Redeploy**:
    ```bash
    caprover deploy
    ```
 
-3. **Check logs** to verify it's working:
+3. **Verify** in the logs that Cronicle starts successfully:
    ```bash
-   caprover logs -a cronicle
+   caprover logs -a cronicle -f
    ```
 
-You should see "Ensuring directory permissions..." in the logs at startup.
+**Note**: The container runs as root specifically for CapRover compatibility. This is safe because:
+- Container isolation provides security boundaries
+- CapRover manages the infrastructure layer
+- Persistent volumes mounted by CapRover require root ownership
 
 ---
 
