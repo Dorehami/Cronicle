@@ -264,6 +264,35 @@ And then nothing else (freezes), check:
    docker inspect <container-id> | grep -A 10 Health
    ```
 
+#### "Server not found in cluster" Error
+
+If logs show:
+```
+Server not found in cluster -- waiting for a master server to contact us
+```
+
+**This has been fixed!** The latest version auto-detects the container hostname and sets itself as the master server.
+
+**If you're using an older version:**
+
+1. **Pull the latest code** and redeploy:
+   ```bash
+   git pull origin master
+   caprover deploy
+   ```
+
+2. **OR manually set the master hostname** in environment variables:
+   ```
+   CRONICLE_master_hostname=<your-container-hostname>
+   ```
+   
+   To find your container hostname, check the logs or:
+   ```bash
+   caprover logs -a cronicle-app | grep "Detected hostname"
+   ```
+
+**Note**: For single-server deployments, the container automatically configures itself as the master on first startup.
+
 ---
 
 ## Production Configuration
