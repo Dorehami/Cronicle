@@ -36,13 +36,17 @@ if [ ! -d "data" ] || [ -z "$(ls -A data 2>/dev/null)" ]; then
     echo "Storage initialized successfully"
 fi
 
-# For single-server deployments, ensure we're set as master
-# CapRover assigns dynamic hostnames, so we need to handle this
+# For single-server deployments, use a fixed hostname
+# CapRover assigns dynamic container hostnames that change on restart
+# This causes cluster mismatch issues, so we use a static hostname
+if [ -z "$CRONICLE_hostname" ]; then
+    export CRONICLE_hostname="cronicle-master"
+    echo "Set fixed hostname to: $CRONICLE_hostname"
+fi
+
+# Set this server as the master for single-server mode
 if [ -z "$CRONICLE_master_hostname" ]; then
-    # Get the hostname (CapRover uses container hostname)
-    HOSTNAME=$(hostname)
-    echo "Detected hostname: $HOSTNAME"
-    export CRONICLE_master_hostname="$HOSTNAME"
+    export CRONICLE_master_hostname="cronicle-master"
     echo "Set master hostname to: $CRONICLE_master_hostname"
 fi
 
