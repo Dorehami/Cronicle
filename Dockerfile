@@ -45,10 +45,6 @@ RUN mkdir -p data logs queue conf plugins
 # Expose HTTP port
 EXPOSE 3012
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD /opt/cronicle/bin/docker-healthcheck.sh
-
 # Set entrypoint
 ENTRYPOINT ["/opt/cronicle/bin/docker-entrypoint.sh"]
 
