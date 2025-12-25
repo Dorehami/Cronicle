@@ -44,14 +44,14 @@ elif [ "$1" = "bash" ] || [ "$1" = "sh" ]; then
 else
     echo "Starting Cronicle daemon..."
     
-    # Start Cronicle in foreground mode for proper signal handling
-    # Docker needs the process to run in foreground to handle SIGTERM correctly
-    if [ -n "$CRONICLE_foreground" ] && [ "$CRONICLE_foreground" = "1" ]; then
-        # Already in foreground mode via env var
-        exec node /opt/cronicle/lib/main.js
-    else
-        # Set foreground mode for Docker
-        export CRONICLE_foreground=1
-        exec node /opt/cronicle/lib/main.js
-    fi
+    # Always start in foreground mode for Docker
+    # This ensures proper signal handling and log output
+    export CRONICLE_foreground=1
+    export CRONICLE_echo=1
+    export CRONICLE_color=0
+    
+    echo "Executing: node /opt/cronicle/lib/main.js"
+    echo "Foreground mode: $CRONICLE_foreground"
+    
+    exec node /opt/cronicle/lib/main.js
 fi
