@@ -107,6 +107,7 @@ In the CapRover dashboard, go to your app → **App Configs** → **Environment 
 |----------|-------|----------|
 | `CRONICLE_base_app_url` | `https://cronicle-app.infra.dorehami.dev` (use your actual URL) | ✅ **CRITICAL** |
 | `CRONICLE_secret_key` | Generate with `openssl rand -hex 32` | ✅ |
+| `CRONICLE_WebServer__http_bind_address` | `0.0.0.0` | ✅ **CRITICAL for CapRover** |
 | `CRONICLE_email_from` | `cronicle@your-domain.com` | Recommended |
 | `CRONICLE_smtp_hostname` | Your SMTP server | Optional |
 | `CRONICLE_smtp_port` | `587` (or your SMTP port) | Optional |
