@@ -1,0 +1,45 @@
+# Node modules (will be rebuilt in container)
+node_modules
+npm-debug.log*
+
+# Runtime directories
+data/
+logs/
+queue/
+conf/
+
+# Git
+.git/
+.gitignore
+.github/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Docker
+Dockerfile
+.dockerignore
+compose.yml
+captain-definition
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Test files
+test/
+*.test.js
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp

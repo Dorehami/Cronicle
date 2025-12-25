@@ -1,0 +1,41 @@
+services:
+  cronicle:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cronicle:dev
+    container_name: cronicle-dev
+    ports:
+      - "3012:3012"
+    environment:
+      # Development settings
+      - CRONICLE_echo=1
+      - CRONICLE_color=1
+      - CRONICLE_foreground=1
+      - CRONICLE_base_app_url=http://localhost:3012
+      - CRONICLE_secret_key=dev_secret_key_change_in_production
+      - CRONICLE_WebServer__http_port=3012
+    volumes:
+      # Persist data
+      - cronicle-data:/opt/cronicle/data
+      - cronicle-logs:/opt/cronicle/logs
+      - cronicle-plugins:/opt/cronicle/plugins
+      # Mount source for development (hot reload)
+      # Note: htdocs is NOT mounted because the build process creates index.html
+      # Mounting raw source would overwrite the built files causing 404 errors
+      - ./lib:/opt/cronicle/lib
+    networks:
+      - cronicle-network
+
+volumes:
+  cronicle-data:
+    name: cronicle-data
+  cronicle-logs:
+    name: cronicle-logs
+  cronicle-plugins:
+    name: cronicle-plugins
+
+networks:
+  cronicle-network:
+    name: cronicle-network
+    driver: bridge

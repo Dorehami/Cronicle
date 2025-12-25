@@ -20,11 +20,31 @@
 * Simple REST API for scheduling and running events.
 * API Keys for authenticating remote apps.
 
+## Docker Quick Start
+
+Cronicle can be easily deployed using Docker:
+
+```bash
+# Using Docker
+docker run -d -p 3012:3012 --name cronicle \
+  -v cronicle-data:/opt/cronicle/data \
+  cronicle:latest
+
+# Using Docker Compose (for development)
+docker compose up -d
+
+# Deploy to CapRover
+caprover deploy
+```
+
+See the **[Docker Guide](https://github.com/jhuckaby/Cronicle/blob/master/docs/Docker.md)** for detailed instructions, including CapRover deployment.
+
 ## Documentation
 
 The Cronicle documentation is split up across these files:
 
 - &rarr; **[Installation & Setup](https://github.com/jhuckaby/Cronicle/blob/master/docs/Setup.md)**
+- &rarr; **[Docker Guide](https://github.com/jhuckaby/Cronicle/blob/master/docs/Docker.md)**
 - &rarr; **[Configuration](https://github.com/jhuckaby/Cronicle/blob/master/docs/Configuration.md)**
 - &rarr; **[Web UI](https://github.com/jhuckaby/Cronicle/blob/master/docs/WebUI.md)**
 - &rarr; **[Plugins](https://github.com/jhuckaby/Cronicle/blob/master/docs/Plugins.md)**
