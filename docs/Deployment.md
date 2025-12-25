@@ -98,15 +98,21 @@ caprover deploy
 
 #### 3. Configure Environment Variables
 
+> [!IMPORTANT]
+> You **must** configure at least the `CRONICLE_base_app_url` environment variable or Cronicle may freeze on startup. See below for details.
+
 In the CapRover dashboard, go to your app → **App Configs** → **Environment Variables** and add:
 
 | Variable | Value | Required |
 |----------|-------|----------|
-| `CRONICLE_base_app_url` | `https://cronicle.your-domain.com` | ✅ |
+| `CRONICLE_base_app_url` | `https://cronicle-app.infra.dorehami.dev` (use your actual URL) | ✅ **CRITICAL** |
 | `CRONICLE_secret_key` | Generate with `openssl rand -hex 32` | ✅ |
 | `CRONICLE_email_from` | `cronicle@your-domain.com` | Recommended |
 | `CRONICLE_smtp_hostname` | Your SMTP server | Optional |
 | `CRONICLE_smtp_port` | `587` (or your SMTP port) | Optional |
+
+> [!WARNING]
+> Without `CRONICLE_base_app_url`, Cronicle will start but may not respond properly. Always set this to your actual app URL!
 
 > [!IMPORTANT]
 > Always generate a unique, strong secret key using:
@@ -221,6 +227,42 @@ Error: EACCES: permission denied, mkdir 'data/_temp'
 - Container isolation provides security boundaries
 - CapRover manages the infrastructure layer
 - Persistent volumes mounted by CapRover require root ownership
+
+#### Cronicle Freezes on Startup
+
+If logs show:
+```
+Starting Cronicle...
+Starting Cronicle daemon...
+```
+
+And then nothing else (freezes), check:
+
+1. **Verify `CRONICLE_base_app_url` is set** in App Configs → Environment Variables:
+   ```
+   CRONICLE_base_app_url=https://your-app-name.your-domain.com
+   ```
+   Use your actual CapRover app URL!
+
+2. **Check more verbose logs** - the latest version adds `CRONICLE_echo=1` for better logging:
+   ```bash
+   caprover logs -a cronicle -f --lines 100
+   ```
+
+3. **Try accessing the app** - Even if logs are quiet, the app might be working:
+   ```bash
+   curl https://your-app.your-domain.com/api/app/status
+   ```
+
+4. **Restart the app** after setting environment variables:
+   - In CapRover dashboard → Your App → **Save & Update**
+
+5. **If still stuck**, check the health status:
+   ```bash
+   # SSH into CapRover server
+   docker ps | grep cronicle
+   docker inspect <container-id> | grep -A 10 Health
+   ```
 
 ---
 
