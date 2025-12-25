@@ -271,27 +271,32 @@ If logs show:
 Server not found in cluster -- waiting for a master server to contact us
 ```
 
-**This has been fixed!** The latest version auto-detects the container hostname and sets itself as the master server.
+**This has been fixed!** The latest version uses a static hostname (`cronicle-master`) instead of the dynamic container hostname.
 
-**If you're using an older version:**
+**IMPORTANT: If you already deployed previously**, you need to clear the persistent storage because it was initialized with the old hostname:
 
-1. **Pull the latest code** and redeploy:
+1. **In CapRover dashboard** → Your App → **App Configs** → Scroll to **Persistent Directories**
+
+2. **Delete all persistent directories** (this will clear old data):
+   - Click the ❌ next to each persistent directory
+   - Confirm deletion
+
+3. **Re-add the persistent directories**:
+   - Path: `/opt/cronicle/data` → Label: `data`
+   - Path: `/opt/cronicle/logs` → Label: `logs`
+   - Path: `/opt/cronicle/queue` → Label: `queue`
+   - Path: `/opt/cronicle/plugins` → Label: `plugins`
+
+4. **Click "Save & Update"**
+
+5. **Redeploy**:
    ```bash
-   git pull origin master
    caprover deploy
    ```
 
-2. **OR manually set the master hostname** in environment variables:
-   ```
-   CRONICLE_master_hostname=<your-container-hostname>
-   ```
-   
-   To find your container hostname, check the logs or:
-   ```bash
-   caprover logs -a cronicle-app | grep "Detected hostname"
-   ```
+This will reinitialize storage with the correct static hostname (`cronicle-master`).
 
-**Note**: For single-server deployments, the container automatically configures itself as the master on first startup.
+**For fresh deployments**: Just deploy normally - the static hostname is now configured automatically.
 
 ---
 
