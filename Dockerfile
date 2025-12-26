@@ -26,9 +26,11 @@ LABEL description="Cronicle - Multi-server task scheduler and runner"
 
 # Install runtime dependencies
 # procps provides GNU-compatible ps command needed for job monitoring
+# docker-cli allows jobs to interact with Docker
 RUN apk add --no-cache \
     bash \
     curl \
+    docker-cli \
     procps \
     tzdata \
     && rm -rf /var/cache/apk/*
