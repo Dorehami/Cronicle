@@ -43,6 +43,38 @@ if [ ! -f "conf/config.json" ]; then
     fi
 fi
 
+# Merge custom config override if it exists (for mail_options, etc.)
+if [ -f "conf/config-override.json" ]; then
+    echo "Merging custom config from config-override.json..."
+    
+    # Use Node.js to merge the configs
+    node -e "
+    const fs = require('fs');
+    const base = JSON.parse(fs.readFileSync('conf/config.json', 'utf8'));
+    const override = JSON.parse(fs.readFileSync('conf/config-override.json', 'utf8'));
+    
+    // Deep merge function
+    function merge(target, source) {
+        for (const key in source) {
+            if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+                target[key] = target[key] || {};
+                merge(target[key], source[key]);
+            } else {
+                target[key] = source[key];
+            }
+        }
+        return target;
+    }
+    
+    const merged = merge(base, override);
+    fs.writeFileSync('conf/config.json', JSON.stringify(merged, null, 2));
+    " || {
+        echo "Warning: Config merge failed, continuing with existing config..."
+    }
+    
+    echo "Config merge complete"
+fi
+
 # Check if storage needs initialization (no data directory or empty)
 if [ ! -d "data" ] || [ -z "$(ls -A data 2>/dev/null)" ]; then
     echo "Initializing storage..."
