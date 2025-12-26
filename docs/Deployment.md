@@ -122,6 +122,40 @@ In the CapRover dashboard, go to your app → **App Configs** → **Environment 
 > ```
 > Never use the default or a weak key in production!
 
+#### Advanced: SMTP Authentication with mail_options
+
+For SMTP servers that require authentication (like Mailgun), you'll need to use a custom config override file since `mail_options` cannot be set via environment variables.
+
+**1. Create `config-override.json` locally:**
+
+```json
+{
+  "mail_options": {
+    "secure": false,
+    "auth": {
+      "user": "your-smtp-username",
+      "pass": "your-smtp-password"
+    }
+  }
+}
+```
+
+**2. In CapRover Dashboard:**
+- Go to **Apps** → **cronicle-app** → **App Configs**
+- Scroll to **Persistent Directories**
+- Add a new persistent directory:
+  - **Path in Container**: `/opt/cronicle/conf/config-override.json`
+  - **Label**: `config-override`
+  
+**3. Upload your config file:**
+- CapRover will create a volume for this file
+- You can edit it via **File Manager** in CapRover dashboard
+- Or use `docker cp` to copy it to the server
+
+**4. Redeploy** and the entrypoint will automatically merge the override config with the base config.
+
+The merged config will include your `mail_options` for SMTP authentication!
+
 #### 4. Enable Persistent Storage
 
 Critical step! Without persistent storage, you'll lose all data when the container restarts.
